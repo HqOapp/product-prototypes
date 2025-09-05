@@ -132,25 +132,40 @@ export default function PrototypePage({ params }: PageProps) {
                 className="w-full h-full border-0"
                 title={prototype.name}
                 sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+                onLoad={() => {
+                  // Hide overlay when iframe loads successfully
+                  const overlay = document.getElementById('prototype-overlay')
+                  if (overlay) {
+                    overlay.style.display = 'none'
+                  }
+                }}
+                onError={() => {
+                  // Show overlay on error
+                  const overlay = document.getElementById('prototype-overlay')
+                  if (overlay) {
+                    overlay.style.display = 'flex'
+                  }
+                }}
               />
               
               {/* Overlay for when prototype isn't running */}
               <div 
                 className="absolute inset-0 bg-gray-100 flex items-center justify-center"
                 id="prototype-overlay"
+                style={{ display: 'flex' }}
               >
                 <div className="text-center max-w-md">
                   <div className="text-gray-400 mb-4">
                     <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Prototype Not Running</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Prototype...</h3>
                   <p className="text-gray-600 mb-4">
-                    The {prototype.name} prototype needs to be started on port {prototypePort}.
+                    Starting the {prototype.name} prototype on port {prototypePort}.
                   </p>
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-left">
-                    <p className="text-sm font-medium text-gray-900 mb-2">To start this prototype:</p>
+                    <p className="text-sm font-medium text-gray-900 mb-2">If this takes too long, ensure the prototype is running:</p>
                     <code className="text-xs text-gray-600 block">
                       cd prototypes/{prototype.id}<br/>
                       npm run dev
@@ -239,38 +254,4 @@ export default function PrototypePage({ params }: PageProps) {
   }
 
   return renderPrototypeContent()
-}
-
-// Add client-side script to handle iframe loading
-const PrototypePageWithScript = (props: PageProps) => {
-  useEffect(() => {
-    const iframe = document.querySelector('iframe')
-    const overlay = document.getElementById('prototype-overlay')
-    
-    if (iframe && overlay) {
-      const handleLoad = () => {
-        overlay.style.display = 'none'
-      }
-      
-      const handleError = () => {
-        overlay.style.display = 'flex'
-      }
-      
-      iframe.addEventListener('load', handleLoad)
-      iframe.addEventListener('error', handleError)
-      
-      // Hide overlay after a delay to handle cases where load event doesn't fire
-      const timer = setTimeout(() => {
-        overlay.style.display = 'none'
-      }, 3000)
-      
-      return () => {
-        iframe.removeEventListener('load', handleLoad)
-        iframe.removeEventListener('error', handleError)
-        clearTimeout(timer)
-      }
-    }
-  }, [])
-  
-  return <PrototypePage {...props} />
 }
