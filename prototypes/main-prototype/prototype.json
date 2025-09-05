@@ -1,0 +1,18 @@
+{
+  "name": "Main Prototype",
+  "description": "Our flagship prototype showcasing the latest innovations and core product features. This is the primary demonstration of our technology stack and design philosophy, representing the current state of our product development.",
+  "products": ["REX Platform", "HqO Core", "AI"],
+  "status": "in-progress",
+  "type": "main",
+  "author": "Core Product Team",
+  "created": "2024-02-01",
+  "updated": "2024-02-05",
+  "tags": ["flagship", "core", "main", "showcase"],
+  "link": "https://main-prototype.hqo.com",
+  "repository": "https://github.com/HqOapp/main-prototype",
+  "screenshot": "hero-banner.jpg",
+  "priority": "high",
+  "isMainPrototype": true,
+  "callToAction": "View Main Prototype",
+  "heroDescription": "Experience our latest innovations in building technology, tenant engagement, and AI-powered property management."
+}

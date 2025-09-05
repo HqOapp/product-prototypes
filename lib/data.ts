@@ -6,6 +6,79 @@ export interface Project {
   link: string
 }
 
+export interface Prototype {
+  id: string
+  name: string
+  description: string
+  products: string[]
+  status: 'draft' | 'in-progress' | 'completed' | 'archived'
+  type: 'design' | 'code' | 'research' | 'poc' | 'main'
+  author: string
+  created: string
+  updated: string
+  tags: string[]
+  link: string
+  repository: string
+  screenshot: string
+  priority: 'low' | 'medium' | 'high'
+  isMainPrototype?: boolean
+  callToAction?: string
+  heroDescription?: string
+}
+
+// Convert Prototype to Project interface for compatibility
+export function prototypeToProject(prototype: Prototype): Project {
+  return {
+    id: prototype.id,
+    title: prototype.name,
+    description: prototype.description,
+    products: prototype.products,
+    link: prototype.link,
+  }
+}
+
+// Fetch prototypes from the API
+export async function getPrototypes(): Promise<Prototype[]> {
+  try {
+    const response = await fetch('/api/prototypes', {
+      cache: 'no-store', // Always fetch fresh data in development
+    })
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch prototypes')
+    }
+    
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching prototypes:', error)
+    return []
+  }
+}
+
+// Get prototypes as projects for backward compatibility
+export async function getPrototypesAsProjects(): Promise<Project[]> {
+  const prototypes = await getPrototypes()
+  return prototypes.map(prototypeToProject)
+}
+
+// Fetch main prototype from the API
+export async function getMainPrototype(): Promise<Prototype | null> {
+  try {
+    const response = await fetch('/api/main-prototype', {
+      cache: 'no-store', // Always fetch fresh data in development
+    })
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch main prototype')
+    }
+    
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching main prototype:', error)
+    return null
+  }
+}
+
 export const productCategories = [
   "Visitor Management",
   "Access Management",

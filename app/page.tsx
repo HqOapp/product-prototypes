@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { ProjectCard } from "@/components/project-card"
-import { projects as initialProjects, type Project } from "@/lib/data"
+import { MainPrototypeCard } from "@/components/main-prototype-card"
+import { type Project, type Prototype, prototypeToProject } from "@/lib/data"
 import { SearchFilter } from "@/components/search-filter"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
@@ -12,8 +13,11 @@ import { Footer } from "@/components/footer"
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedProducts, setSelectedProducts] = useState<string[]>([])
-  const [projects, setProjects] = useState<Project[]>(initialProjects)
+  const [projects, setProjects] = useState<Project[]>([])
+  const [prototypes, setPrototypes] = useState<Prototype[]>([])
+  const [mainPrototype, setMainPrototype] = useState<Prototype | null>(null)
   const [upvotes, setUpvotes] = useState<Record<string, number>>({})
+  const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
 
   // Load upvotes from localStorage on initial render
@@ -33,18 +37,70 @@ export default function Home() {
     localStorage.setItem("projectUpvotes", JSON.stringify(upvotes))
   }, [upvotes])
 
-  // Get only the product categories that are actually used in projects
+  // Fetch prototypes from API on component mount
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setIsLoading(true)
+        
+        // Fetch both regular prototypes and main prototype in parallel
+        const [prototypesResponse, mainPrototypeResponse] = await Promise.all([
+          fetch('/api/prototypes'),
+          fetch('/api/main-prototype')
+        ])
+        
+        if (!prototypesResponse.ok) {
+          throw new Error('Failed to fetch prototypes')
+        }
+        
+        const fetchedPrototypes: Prototype[] = await prototypesResponse.json()
+        setPrototypes(fetchedPrototypes)
+        
+        // Convert prototypes to projects for backward compatibility
+        const convertedProjects = fetchedPrototypes.map(prototypeToProject)
+        setProjects(convertedProjects)
+        
+        // Handle main prototype (might be null if it doesn't exist)
+        if (mainPrototypeResponse.ok) {
+          const fetchedMainPrototype: Prototype | null = await mainPrototypeResponse.json()
+          setMainPrototype(fetchedMainPrototype)
+        }
+        
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        toast({
+          title: "Error",
+          description: "Failed to load prototypes. Please refresh the page.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // Get only the product categories that are actually used in projects and main prototype
   const usedProductCategories = useMemo(() => {
     const productSet = new Set<string>()
 
+    // Add products from regular projects
     projects.forEach((project) => {
       project.products.forEach((product) => {
         productSet.add(product)
       })
     })
 
+    // Add products from main prototype
+    if (mainPrototype) {
+      mainPrototype.products.forEach((product) => {
+        productSet.add(product)
+      })
+    }
+
     return Array.from(productSet).sort()
-  }, [projects])
+  }, [projects, mainPrototype])
 
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
@@ -61,6 +117,24 @@ export default function Home() {
       return matchesSearch && matchesProducts
     })
   }, [searchTerm, selectedProducts, projects])
+
+  // Filter main prototype based on search criteria
+  const shouldShowMainPrototype = useMemo(() => {
+    if (!mainPrototype) return false
+
+    // Filter by search term
+    const matchesSearch =
+      searchTerm === "" ||
+      mainPrototype.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      mainPrototype.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (mainPrototype.heroDescription && mainPrototype.heroDescription.toLowerCase().includes(searchTerm.toLowerCase()))
+
+    // Filter by selected products - prototype must have ALL selected tags
+    const matchesProducts =
+      selectedProducts.length === 0 || selectedProducts.every((product) => mainPrototype.products.includes(product))
+
+    return matchesSearch && matchesProducts
+  }, [searchTerm, selectedProducts, mainPrototype])
 
   const handleOpenIdeaLink = () => {
     window.open('https://ventureapp.atlassian.net/jira/polaris/projects/RDMP/ideas/view/7993191', '_blank')
@@ -85,7 +159,7 @@ export default function Home() {
     <>
       <main className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-start mb-12">
+          <div className="flex justify-between items-start mb-8">
             <header className="flex flex-col">
               <div className="mb-4 w-[60px]">
                 {/* Inline SVG for reliable rendering */}
@@ -119,22 +193,52 @@ export default function Home() {
             usedProductCategories={usedProductCategories}
           />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {filteredProjects.map((project) => (
-              <ProjectCard
-                key={project.id}
-                project={project}
-                onDelete={project.id.startsWith("idea-") ? handleDeleteProject : undefined}
-                onUpvote={handleUpvote}
-                upvotes={upvotes}
-              />
-            ))}
-          </div>
-
-          {filteredProjects.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-[#696E72]">No projects match your search criteria.</p>
+          {isLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-2/3 mb-4"></div>
+                  <div className="flex gap-2 mb-4">
+                    <div className="h-6 bg-gray-200 rounded w-16"></div>
+                    <div className="h-6 bg-gray-200 rounded w-20"></div>
+                  </div>
+                  <div className="h-8 bg-gray-200 rounded w-24"></div>
+                </div>
+              ))}
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {/* Main Prototype Card - appears first in grid */}
+                {shouldShowMainPrototype && mainPrototype && (
+                  <MainPrototypeCard
+                    key={mainPrototype.id}
+                    prototype={mainPrototype}
+                    onUpvote={handleUpvote}
+                    upvotes={upvotes}
+                  />
+                )}
+                
+                {/* Regular prototype cards */}
+                {filteredProjects.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    onDelete={project.id.startsWith("idea-") ? handleDeleteProject : undefined}
+                    onUpvote={handleUpvote}
+                    upvotes={upvotes}
+                  />
+                ))}
+              </div>
+
+              {filteredProjects.length === 0 && !shouldShowMainPrototype && (
+                <div className="text-center py-12">
+                  <p className="text-[#696E72]">No prototypes match your search criteria.</p>
+                </div>
+              )}
+            </>
           )}
         </div>
 
