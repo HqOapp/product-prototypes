@@ -95,9 +95,25 @@ export default function PrototypePage({ params }: PageProps) {
   const renderPrototypeContent = () => {
     switch (prototype.type) {
       case 'code':
-        // For code prototypes, we'll embed them in an iframe running on their designated port
+        // For code prototypes, determine the URL based on environment
         const prototypePort = prototype.id === 'hqo-crm' ? '3001' : '3002'
-        const prototypeUrl = `http://localhost:${prototypePort}`
+        const isProduction = process.env.NODE_ENV === 'production'
+        const isDevelopment = !isProduction
+        
+        // In development, use localhost. In production, check for deployed prototype URLs
+        let prototypeUrl: string
+        if (isDevelopment) {
+          prototypeUrl = `http://localhost:${prototypePort}`
+        } else {
+          // Production URLs - these should be set as environment variables or hardcoded for specific prototypes
+          switch (prototype.id) {
+            case 'hqo-crm':
+              prototypeUrl = process.env.NEXT_PUBLIC_HQO_CRM_URL || 'https://hqo-crm.vercel.app'
+              break
+            default:
+              prototypeUrl = `https://${prototype.id}.vercel.app`
+          }
+        }
         
         return (
           <div className="h-screen w-full">
@@ -160,17 +176,32 @@ export default function PrototypePage({ params }: PageProps) {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Prototype...</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                    {isDevelopment ? 'Loading Prototype...' : 'Loading Deployed Prototype...'}
+                  </h3>
                   <p className="text-gray-600 mb-4">
-                    Starting the {prototype.name} prototype on port {prototypePort}.
+                    {isDevelopment 
+                      ? `Starting the ${prototype.name} prototype on port ${prototypePort}.`
+                      : `Loading ${prototype.name} from deployment: ${prototypeUrl}`
+                    }
                   </p>
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-left">
-                    <p className="text-sm font-medium text-gray-900 mb-2">If this takes too long, ensure the prototype is running:</p>
-                    <code className="text-xs text-gray-600 block">
-                      cd prototypes/{prototype.id}<br/>
-                      npm run dev
-                    </code>
-                  </div>
+                  {isDevelopment && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-left">
+                      <p className="text-sm font-medium text-gray-900 mb-2">If this takes too long, ensure the prototype is running:</p>
+                      <code className="text-xs text-gray-600 block">
+                        cd prototypes/{prototype.id}<br/>
+                        npm run dev
+                      </code>
+                    </div>
+                  )}
+                  {!isDevelopment && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
+                      <p className="text-sm font-medium text-blue-900 mb-2">Production Deployment:</p>
+                      <p className="text-xs text-blue-700">
+                        If the prototype doesn't load, it may need to be deployed separately to: {prototypeUrl}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
