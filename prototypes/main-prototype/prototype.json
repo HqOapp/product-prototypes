@@ -8,7 +8,7 @@
   "created": "2024-02-01",
   "updated": "2024-02-05",
   "tags": ["flagship", "core", "main", "showcase"],
-  "link": "https://main-prototype.hqo.com",
+  "link": "/prototypes/main-prototype",
   "repository": "https://github.com/HqOapp/main-prototype",
   "screenshot": "hero-banner.jpg",
   "priority": "high",

@@ -43,9 +43,22 @@ Visit: **http://localhost:3001**
 ## 🎯 How It Works
 
 1. **Start the main dashboard** on port 3000
-2. **Start the HqO CRM prototype** on port 3001
+2. **Start the HqO CRM prototype** on port 3001 (for embedding)
 3. **Click the "View CRM Demo" button** on the HqO CRM card in the main dashboard
-4. **The prototype opens in a new tab** at http://localhost:3001
+4. **The prototype opens in a new tab** at `/prototypes/hqo-crm` with the CRM embedded in an iframe
+
+### 🔄 Route-Based Access
+
+The prototypes are now accessible through clean routes:
+- **Main Prototype**: `/prototypes/main-prototype`
+- **HqO CRM**: `/prototypes/hqo-crm`
+- **Future prototypes**: `/prototypes/{prototype-id}`
+
+Each route provides:
+- ✅ **Embedded prototype view** in an iframe
+- ✅ **Fallback instructions** if the prototype isn't running
+- ✅ **Navigation controls** to go back to dashboard or open in new tab
+- ✅ **Loading states** and error handling
 
 ## 🔧 Troubleshooting
 
@@ -75,7 +88,7 @@ To add a new prototype:
 
 1. **Create a folder** in `prototypes/`
 2. **Add a `prototype.json`** file with metadata
-3. **Set the `link` field** to your local development URL (e.g., `http://localhost:3002`)
+3. **Set the `link` field** to your prototype route (e.g., `/prototypes/my-new-prototype`)
 4. **Update the package.json** in your prototype to use a unique port
 5. **The dashboard will automatically discover it**
 
@@ -91,10 +104,21 @@ Example prototype.json:
   "created": "2024-02-01",
   "updated": "2024-02-01",
   "tags": ["tag1", "tag2"],
-  "link": "http://localhost:3002",
+  "link": "/prototypes/my-new-prototype",
   "repository": "https://github.com/your-repo",
   "screenshot": "screenshot.png",
   "priority": "medium",
   "callToAction": "View Prototype"
 }
 ```
+
+### 🎨 Route Structure
+
+The prototype routes are automatically generated:
+- **URL Pattern**: `/prototypes/{prototype-id}`
+- **Prototype ID**: Matches the folder name in `prototypes/`
+- **Route Features**:
+  - Embedded iframe view of the prototype
+  - Automatic fallback if prototype isn't running
+  - Instructions for starting the prototype
+  - Navigation back to dashboard

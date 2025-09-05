@@ -1,0 +1,276 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { notFound } from 'next/navigation'
+
+interface Prototype {
+  id: string
+  name: string
+  description: string
+  products: string[]
+  status: string
+  type: string
+  author: string
+  created: string
+  updated: string
+  tags: string[]
+  link: string
+  repository: string
+  screenshot: string
+  priority: string
+  callToAction?: string
+  heroDescription?: string
+}
+
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default function PrototypePage({ params }: PageProps) {
+  const [prototype, setPrototype] = useState<Prototype | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [prototypeId, setPrototypeId] = useState<string>('')
+
+  useEffect(() => {
+    async function getParams() {
+      const resolvedParams = await params
+      setPrototypeId(resolvedParams.id)
+    }
+    getParams()
+  }, [params])
+
+  useEffect(() => {
+    if (!prototypeId) return
+
+    async function fetchPrototype() {
+      try {
+        // First try to get from regular prototypes
+        const response = await fetch('/api/prototypes')
+        const prototypes = await response.json()
+        
+        let foundPrototype = prototypes.find((p: Prototype) => p.id === prototypeId)
+        
+        // If not found in regular prototypes, check main prototype
+        if (!foundPrototype && prototypeId === 'main-prototype') {
+          const mainResponse = await fetch('/api/main-prototype')
+          if (mainResponse.ok) {
+            foundPrototype = await mainResponse.json()
+            foundPrototype.id = 'main-prototype'
+          }
+        }
+
+        if (!foundPrototype) {
+          notFound()
+          return
+        }
+
+        setPrototype(foundPrototype)
+      } catch (error) {
+        console.error('Failed to fetch prototype:', error)
+        notFound()
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPrototype()
+  }, [prototypeId])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#044AEF] mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading prototype...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!prototype) {
+    return notFound()
+  }
+
+  // Handle different prototype types
+  const renderPrototypeContent = () => {
+    switch (prototype.type) {
+      case 'code':
+        // For code prototypes, we'll embed them in an iframe running on their designated port
+        const prototypePort = prototype.id === 'hqo-crm' ? '3001' : '3002'
+        const prototypeUrl = `http://localhost:${prototypePort}`
+        
+        return (
+          <div className="h-screen w-full">
+            <div className="bg-white border-b border-gray-200 px-6 py-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-semibold text-gray-900">{prototype.name}</h1>
+                  <p className="text-gray-600 mt-1">{prototype.description}</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <a
+                    href={prototypeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    Open in New Tab
+                  </a>
+                  <a
+                    href="/"
+                    className="inline-flex items-center px-4 py-2 bg-[#044AEF] text-white rounded-md shadow-sm text-sm font-medium hover:bg-[#0339c7]"
+                  >
+                    Back to Dashboard
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+            <div className="relative h-[calc(100vh-100px)]">
+              <iframe
+                src={prototypeUrl}
+                className="w-full h-full border-0"
+                title={prototype.name}
+                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+              />
+              
+              {/* Overlay for when prototype isn't running */}
+              <div 
+                className="absolute inset-0 bg-gray-100 flex items-center justify-center"
+                id="prototype-overlay"
+              >
+                <div className="text-center max-w-md">
+                  <div className="text-gray-400 mb-4">
+                    <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Prototype Not Running</h3>
+                  <p className="text-gray-600 mb-4">
+                    The {prototype.name} prototype needs to be started on port {prototypePort}.
+                  </p>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-left">
+                    <p className="text-sm font-medium text-gray-900 mb-2">To start this prototype:</p>
+                    <code className="text-xs text-gray-600 block">
+                      cd prototypes/{prototype.id}<br/>
+                      npm run dev
+                    </code>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+
+      case 'main':
+        // For main prototype, show information page
+        return (
+          <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+                <div className="text-center mb-8">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-4">{prototype.name}</h1>
+                  <p className="text-xl text-gray-600">{prototype.heroDescription || prototype.description}</p>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Details</h3>
+                    <dl className="space-y-2">
+                      <div>
+                        <dt className="text-sm font-medium text-gray-500">Author</dt>
+                        <dd className="text-sm text-gray-900">{prototype.author}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm font-medium text-gray-500">Status</dt>
+                        <dd className="text-sm text-gray-900 capitalize">{prototype.status}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-sm font-medium text-gray-500">Created</dt>
+                        <dd className="text-sm text-gray-900">{prototype.created}</dd>
+                      </div>
+                    </dl>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">Products</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {prototype.products.map((product) => (
+                        <span
+                          key={product}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#044AEF] text-white"
+                        >
+                          {product}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center">
+                  <a
+                    href="/"
+                    className="inline-flex items-center px-6 py-3 bg-[#044AEF] text-white rounded-md shadow-sm text-base font-medium hover:bg-[#0339c7]"
+                  >
+                    Back to Dashboard
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+
+      default:
+        return (
+          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="text-center">
+              <h1 className="text-2xl font-semibold text-gray-900 mb-4">{prototype.name}</h1>
+              <p className="text-gray-600 mb-8">{prototype.description}</p>
+              <a
+                href="/"
+                className="inline-flex items-center px-6 py-3 bg-[#044AEF] text-white rounded-md shadow-sm text-base font-medium hover:bg-[#0339c7]"
+              >
+                Back to Dashboard
+              </a>
+            </div>
+          </div>
+        )
+    }
+  }
+
+  return renderPrototypeContent()
+}
+
+// Add client-side script to handle iframe loading
+const PrototypePageWithScript = (props: PageProps) => {
+  useEffect(() => {
+    const iframe = document.querySelector('iframe')
+    const overlay = document.getElementById('prototype-overlay')
+    
+    if (iframe && overlay) {
+      const handleLoad = () => {
+        overlay.style.display = 'none'
+      }
+      
+      const handleError = () => {
+        overlay.style.display = 'flex'
+      }
+      
+      iframe.addEventListener('load', handleLoad)
+      iframe.addEventListener('error', handleError)
+      
+      // Hide overlay after a delay to handle cases where load event doesn't fire
+      const timer = setTimeout(() => {
+        overlay.style.display = 'none'
+      }, 3000)
+      
+      return () => {
+        iframe.removeEventListener('load', handleLoad)
+        iframe.removeEventListener('error', handleError)
+        clearTimeout(timer)
+      }
+    }
+  }, [])
+  
+  return <PrototypePage {...props} />
+}
