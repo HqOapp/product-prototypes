@@ -6,14 +6,12 @@ import { projects as initialProjects, type Project } from "@/lib/data"
 import { SearchFilter } from "@/components/search-filter"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
-import { AddIdeaModal } from "@/components/add-idea-modal"
 import { useToast } from "@/hooks/use-toast"
 import { Footer } from "@/components/footer"
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedProducts, setSelectedProducts] = useState<string[]>([])
-  const [isAddIdeaModalOpen, setIsAddIdeaModalOpen] = useState(false)
   const [projects, setProjects] = useState<Project[]>(initialProjects)
   const [upvotes, setUpvotes] = useState<Record<string, number>>({})
   const { toast } = useToast()
@@ -64,12 +62,8 @@ export default function Home() {
     })
   }, [searchTerm, selectedProducts, projects])
 
-  const handleAddIdea = (newIdea: Project) => {
-    setProjects((prev) => [...prev, newIdea])
-    toast({
-      title: "Idea added",
-      description: "Your idea has been added to the showcase.",
-    })
+  const handleOpenIdeaLink = () => {
+    window.open('https://ventureapp.atlassian.net/jira/polaris/projects/RDMP/ideas/view/7993191', '_blank')
   }
 
   const handleDeleteProject = (id: string) => {
@@ -113,7 +107,7 @@ export default function Home() {
               <h1 className="text-3xl font-normal text-[#696E72]">What's next</h1>
             </header>
 
-            <Button onClick={() => setIsAddIdeaModalOpen(true)} className="bg-[#044AEF] hover:bg-[#0339c7]">
+            <Button onClick={handleOpenIdeaLink} className="bg-[#044AEF] hover:bg-[#0339c7]">
               <PlusCircle className="mr-1 h-4 w-4" />
               Add idea
             </Button>
@@ -144,12 +138,6 @@ export default function Home() {
           )}
         </div>
 
-        <AddIdeaModal
-          isOpen={isAddIdeaModalOpen}
-          onClose={() => setIsAddIdeaModalOpen(false)}
-          onAddIdea={handleAddIdea}
-          usedProductCategories={usedProductCategories}
-        />
       </main>
       <Footer />
     </>
