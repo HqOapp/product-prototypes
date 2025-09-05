@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useNavigation } from "@/lib/navigation-context"
+import { createHqoCrmRoute } from "@/lib/hqo-crm-routes"
 
 export function AppSidebar() {
   const pathname = usePathname()
@@ -14,38 +15,38 @@ export function AppSidebar() {
     {
       title: "Overview",
       icon: LayoutDashboard,
-      href: "/intelligence",
-      active: pathname === "/intelligence",
+      href: createHqoCrmRoute("/intelligence"),
+      active: pathname === createHqoCrmRoute("/intelligence"),
     },
     {
       title: "Product Analytics",
       icon: BarChart3,
-      href: "/intelligence/product-analytics",
-      active: pathname === "/intelligence/product-analytics",
+      href: createHqoCrmRoute("/intelligence/product-analytics"),
+      active: pathname === createHqoCrmRoute("/intelligence/product-analytics"),
     },
     {
       title: "Tenant Sentiment",
       icon: Sparkles,
-      href: "/intelligence/tenant-sentiment",
-      active: pathname === "/intelligence/tenant-sentiment",
+      href: createHqoCrmRoute("/intelligence/tenant-sentiment"),
+      active: pathname === createHqoCrmRoute("/intelligence/tenant-sentiment"),
     },
     {
       title: "Renewals",
       icon: RefreshCw,
-      href: "/intelligence/renewals",
-      active: pathname === "/intelligence/renewals",
+      href: createHqoCrmRoute("/intelligence/renewals"),
+      active: pathname === createHqoCrmRoute("/intelligence/renewals"),
     },
     {
       title: "Assessments",
       icon: Building2,
-      href: "/intelligence/assessments",
-      active: pathname === "/intelligence/assessments",
+      href: createHqoCrmRoute("/intelligence/assessments"),
+      active: pathname === createHqoCrmRoute("/intelligence/assessments"),
     },
     {
       title: "News",
       icon: Newspaper,
-      href: "/intelligence/news",
-      active: pathname === "/intelligence/news",
+      href: createHqoCrmRoute("/intelligence/news"),
+      active: pathname === createHqoCrmRoute("/intelligence/news"),
     },
   ]
 

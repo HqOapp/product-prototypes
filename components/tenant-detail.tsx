@@ -32,6 +32,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronDown, Mail, FileText } from "lucide-react";
 import Link from "next/link";
+import { createHqoCrmRoute } from "@/lib/hqo-crm-routes";
 import { getTenantById } from "@/lib/leasesData";
 
 const tabs = [
@@ -277,13 +278,13 @@ export function TenantDetail({ tenantId }: TenantDetailProps) {
             className="flex items-center text-sm text-gray-500 mb-4"
             aria-label="Breadcrumb"
           >
-            <Link href="/tenants" className="hover:underline text-gray-500">
+            <Link href={createHqoCrmRoute("/tenants")} className="hover:underline text-gray-500">
               Tenants
             </Link>
           </nav>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center justify-start space-x-0">
-              <Link href="/tenants"></Link>
+              <Link href={createHqoCrmRoute("/tenants")}></Link>
 
               <div className="flex items-center space-x-3">
                 <div className="h-16 w-16 rounded-lg overflow-hidden bg-gradient-to-br from-pink-500 to-purple-600">

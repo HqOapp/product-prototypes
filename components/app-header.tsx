@@ -2,6 +2,7 @@
 
 import { HelpCircle, Settings, User, LogOut, Eye, EyeOff } from "lucide-react"
 import Link from "next/link"
+import { createHqoCrmRoute } from "@/lib/hqo-crm-routes"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -47,7 +48,7 @@ export function AppHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-white">
       <div className="flex h-16 items-center px-4">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href={createHqoCrmRoute("/")} className="flex items-center gap-2">
             <span className="text-xl font-bold text-[#ff4438]">HqO</span>
           </Link>
 

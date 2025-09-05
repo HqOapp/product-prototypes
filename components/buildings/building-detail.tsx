@@ -31,6 +31,7 @@ import {
   Home
 } from "lucide-react"
 import Link from "next/link"
+import { createHqoCrmRoute } from "@/lib/hqo-crm-routes"
 import { mockBuildings } from "@/lib/mockData"
 import { StackingPlanTab } from "./tabs/stacking-plan-tab"
 
@@ -377,7 +378,7 @@ export function BuildingDetail({ buildingId }: BuildingDetailProps) {
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="px-6 py-4">
           <nav className="flex items-center text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
-            <Link href="/buildings" className="hover:underline text-gray-500">Buildings</Link>
+            <Link href={createHqoCrmRoute("/buildings")} className="hover:underline text-gray-500">Buildings</Link>
           </nav>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center justify-start space-x-0">

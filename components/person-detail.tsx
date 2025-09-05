@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { ChevronLeft, Plus, Copy, Calendar, Users, FileText, MapPin, CreditCard, Shield, MessageSquare, X, Tag } from "lucide-react"
 import Link from "next/link"
+import { createHqoCrmRoute } from "@/lib/hqo-crm-routes"
 
 // Mock data - in real app this would come from API
 const mockPersons = [
@@ -347,7 +348,7 @@ export function PersonDetail({ personId }: PersonDetailProps) {
         <div className="px-8 py-6">
           {/* Breadcrumb */}
           <nav className="flex items-center text-sm text-slate-500 mb-6" aria-label="Breadcrumb">
-            <Link href="/people" className="hover:underline text-blue-600 font-medium">People</Link>
+            <Link href={createHqoCrmRoute("/people")} className="hover:underline text-blue-600 font-medium">People</Link>
           </nav>
 
           {/* Profile Header */}

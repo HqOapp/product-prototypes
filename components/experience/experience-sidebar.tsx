@@ -19,6 +19,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { useNavigation } from "@/lib/navigation-context";
 import { useState, useEffect } from "react";
+import { createHqoCrmRoute } from "@/lib/hqo-crm-routes";
 
 interface SubMenuItem {
   title: string;
@@ -42,7 +43,7 @@ export function ExperienceSidebar() {
   const { isNavigationHidden } = useNavigation();
 
   // Check if offerings section should be expanded
-  const isProductsExpanded = pathname.startsWith("/experience/offerings");
+  const isProductsExpanded = pathname.startsWith(createHqoCrmRoute("/experience/offerings"));
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
     () => ({
       products: isProductsExpanded,
@@ -51,7 +52,7 @@ export function ExperienceSidebar() {
 
   // Update expanded state when route changes
   useEffect(() => {
-    const shouldExpand = pathname.startsWith("/experience/offerings");
+    const shouldExpand = pathname.startsWith(createHqoCrmRoute("/experience/offerings"));
     setExpandedItems((prev) => ({
       ...prev,
       products: shouldExpand,
@@ -62,75 +63,75 @@ export function ExperienceSidebar() {
     {
       title: "Collections",
       icon: Layers,
-      href: "/experience/collections",
+      href: createHqoCrmRoute("/experience/collections"),
       active:
-        pathname === "/experience/collections" ||
-        pathname.startsWith("/experience/collections/"),
+        pathname === createHqoCrmRoute("/experience/collections") ||
+        pathname.startsWith(createHqoCrmRoute("/experience/collections/")),
     },
     {
       title: "Offerings",
       icon: Package,
-      href: "/experience/offerings",
+      href: createHqoCrmRoute("/experience/offerings"),
       active:
-        pathname === "/experience/offerings" ||
-        pathname.startsWith("/experience/offerings/"),
+        pathname === createHqoCrmRoute("/experience/offerings") ||
+        pathname.startsWith(createHqoCrmRoute("/experience/offerings/")),
       hasSubmenu: true,
       isExpanded: expandedItems.products,
       submenu: [
         {
           title: "Offerings overview",
-          href: "/experience/offerings/overview-2",
+          href: createHqoCrmRoute("/experience/offerings/overview-2"),
           active:
-            pathname === "/experience/offerings/overview-2" ||
-            pathname.startsWith("/experience/offerings/overview-2/"),
+            pathname === createHqoCrmRoute("/experience/offerings/overview-2") ||
+            pathname.startsWith(createHqoCrmRoute("/experience/offerings/overview-2/")),
         },
         {
           title: "Inventory",
-          href: "/experience/offerings/inventory",
+          href: createHqoCrmRoute("/experience/offerings/inventory"),
           active:
-            pathname === "/experience/offerings/inventory" ||
-            pathname.startsWith("/experience/offerings/inventory/"),
+            pathname === createHqoCrmRoute("/experience/offerings/inventory") ||
+            pathname.startsWith(createHqoCrmRoute("/experience/offerings/inventory/")),
         },
         {
           title: "Bundles",
-          href: "/experience/offerings/bundles",
+          href: createHqoCrmRoute("/experience/offerings/bundles"),
           active:
-            pathname === "/experience/offerings/bundles" ||
-            pathname.startsWith("/experience/offerings/bundles/"),
+            pathname === createHqoCrmRoute("/experience/offerings/bundles") ||
+            pathname.startsWith(createHqoCrmRoute("/experience/offerings/bundles/")),
         },
       ],
     },
     {
       title: "Content",
       icon: FileText,
-      href: "/experience/content",
-      active: pathname === "/experience/content",
+      href: createHqoCrmRoute("/experience/content"),
+      active: pathname === createHqoCrmRoute("/experience/content"),
     },
     {
       title: "Communications",
       icon: MessageSquare,
-      href: "/experience/communications",
-      active: pathname === "/experience/communications",
+      href: createHqoCrmRoute("/experience/communications"),
+      active: pathname === createHqoCrmRoute("/experience/communications"),
     },
     {
       title: "Surveys",
       icon: BarChart3,
-      href: "/experience/surveys",
-      active: pathname === "/experience/surveys",
+      href: createHqoCrmRoute("/experience/surveys"),
+      active: pathname === createHqoCrmRoute("/experience/surveys"),
     },
     {
       title: "Events",
       icon: Calendar,
-      href: "/experience/events",
-      active: pathname === "/experience/events",
+      href: createHqoCrmRoute("/experience/events"),
+      active: pathname === createHqoCrmRoute("/experience/events"),
     },
     {
       title: "Waivers",
       icon: ScrollText,
-      href: "/experience/waivers",
+      href: createHqoCrmRoute("/experience/waivers"),
       active:
-        pathname === "/experience/waivers" ||
-        pathname.startsWith("/experience/waivers/"),
+        pathname === createHqoCrmRoute("/experience/waivers") ||
+        pathname.startsWith(createHqoCrmRoute("/experience/waivers/")),
     },
     // Services is still hidden for now
     // {
@@ -145,14 +146,14 @@ export function ExperienceSidebar() {
     {
       title: "Theme",
       icon: Palette,
-      href: "/experience/theme",
-      active: pathname === "/experience/theme",
+      href: createHqoCrmRoute("/experience/theme"),
+      active: pathname === createHqoCrmRoute("/experience/theme"),
     },
     {
       title: "Features",
       icon: Settings,
-      href: "/experience/features",
-      active: pathname === "/experience/features",
+      href: createHqoCrmRoute("/experience/features"),
+      active: pathname === createHqoCrmRoute("/experience/features"),
     },
   ];
 
@@ -201,7 +202,7 @@ export function ExperienceSidebar() {
                             href={item.href}
                             className={cn(
                               "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ml-6",
-                              pathname === "/experience/offerings" &&
+                              pathname === createHqoCrmRoute("/experience/offerings") &&
                                 !pathname.includes("/inventory")
                                 ? "bg-primary/10 text-primary"
                                 : "text-muted-foreground hover:bg-muted hover:text-foreground"

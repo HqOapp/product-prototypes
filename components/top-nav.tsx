@@ -16,12 +16,13 @@ import { cn } from "@/lib/utils"
 import Image from "next/image"
 import { Switch } from "@/components/ui/switch"
 import { useNavigation } from "@/lib/navigation-context"
+import { createHqoCrmRoute, getHqoCrmRelativePath } from "@/lib/hqo-crm-routes"
 
 const navigation = [
-  { name: "Home", href: "/" },
-  { name: "Experience Manager", href: "/experience" },
-  { name: "Operations", href: "/operations" },
-  { name: "Intelligence", href: "/intelligence" },
+  { name: "Home", href: createHqoCrmRoute("/") },
+  { name: "Experience Manager", href: createHqoCrmRoute("/experience") },
+  { name: "Operations", href: createHqoCrmRoute("/operations") },
+  { name: "Intelligence", href: createHqoCrmRoute("/intelligence") },
 ]
 
 export function TopNav() {
@@ -74,7 +75,7 @@ export function TopNav() {
           </Button>
 
           {/* Settings */}
-          <Link href="/admin">
+          <Link href={createHqoCrmRoute("/admin")}>
             <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
               <Settings className="h-4 w-4 mr-2" />
               Settings

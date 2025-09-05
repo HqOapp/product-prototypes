@@ -53,6 +53,7 @@ import {
   PartyPopper,
 } from "lucide-react";
 import Link from "next/link";
+import { createHqoCrmRoute } from "@/lib/hqo-crm-routes";
 
 const mockWaiverData = {
   "1": {
@@ -199,7 +200,7 @@ export function WaiverDetail({ waiverId }: WaiverDetailProps) {
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="px-6 py-6">
           <div className="flex items-center space-x-4 mb-6">
-            <Link href="/experience/waivers">
+            <Link href={createHqoCrmRoute("/experience/waivers")}
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to waivers
@@ -277,7 +278,7 @@ export function WaiverDetail({ waiverId }: WaiverDetailProps) {
       {/* Header */}
       <div className="px-6 py-6 border-b bg-white">
         <div className="flex items-center space-x-4 mb-6">
-          <Link href="/experience/waivers">
+          <Link href={createHqoCrmRoute("/experience/waivers")}
             <Button variant="ghost" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to waivers
