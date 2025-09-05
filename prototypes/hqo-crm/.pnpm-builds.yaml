@@ -1,0 +1,7 @@
+builds:
+  - source: sharp
+    commands:
+      - npm run install
+    env:
+      - name: SHARP_IGNORE_GLOBAL_LIBVIPS
+        value: "1" 

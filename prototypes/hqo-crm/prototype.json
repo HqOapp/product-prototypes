@@ -1,0 +1,17 @@
+{
+  "name": "HqO CRM",
+  "description": "A comprehensive CRM system specifically designed for commercial real estate management. Features lease management, tenant tracking, building management, analytics dashboard, and demo customization capabilities.",
+  "products": ["CRM", "REX Platform", "Analytics"],
+  "status": "completed",
+  "type": "code",
+  "author": "Product Team",
+  "created": "2024-02-01",
+  "updated": "2024-02-05",
+  "tags": ["crm", "real-estate", "analytics", "lease-management", "tenant-management"],
+  "link": "https://hqo-crm.vercel.app",
+  "repository": "https://github.com/HqOapp/hqo-crm",
+  "screenshot": "screenshot.png",
+  "priority": "high",
+  "callToAction": "View CRM Demo",
+  "heroDescription": "Experience our comprehensive commercial real estate CRM with advanced lease management, tenant analytics, and customizable demo modes for client presentations."
+}
